@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"Go-Shell/models"
 	"errors"
 	"fmt"
 	"os"
@@ -22,6 +23,7 @@ var builtins = []string{
 	"adduser",
 	"logout",
 	"history",
+	"clean",
 }
 
 func CommandNames() []string {
@@ -129,6 +131,11 @@ func Cd(args []string) error {
 		return errors.New("usage: cd <directory>")
 	}
 	return os.Chdir(args[0])
+}
+
+func Clean(user *models.User) error {
+	user.ClearHistory()
+	return nil
 }
 
 func isBuiltin(cmd string) bool {

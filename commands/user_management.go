@@ -7,6 +7,9 @@ import (
 	"gorm.io/gorm"
 )
 
+// to handle logout from one user and login as a previous user using stack
+var userStack []*models.User
+
 func Login(args []string, currentUser **models.User) error {
 	if len(args) != 2 {
 		return errors.New("usage: login <username> <password>")
@@ -19,8 +22,8 @@ func Login(args []string, currentUser **models.User) error {
 	if user.Password != password {
 		return errors.New("incorrect password")
 	}
+	userStack = append(userStack, *currentUser)
 	*currentUser = user
-	fmt.Printf("%s:$ \n", username)
 	return nil
 }
 
@@ -39,6 +42,11 @@ func AddUser(args []string) error {
 }
 
 func Logout(currentUser **models.User) error {
-	*currentUser = models.NewUser("guest", "")
+	if len(userStack) == 0 {
+		*currentUser, _ = models.FindUser("guest")
+		return nil
+	}
+	*currentUser = userStack[len(userStack)-1]
+	userStack = userStack[:len(userStack)-1]
 	return nil
 }

@@ -79,6 +79,8 @@ func processInput(input string) error {
 		return commands.Logout(&currentUser)
 	case "history":
 		return commands.History(args[1:], currentUser)
+	case "clean":
+		return commands.Clean(currentUser)
 	default:
 		return commands.ExecSystemCommand(args)
 	}

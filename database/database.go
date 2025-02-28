@@ -2,10 +2,9 @@ package database
 
 import (
 	"fmt"
-	"gorm.io/gorm/logger"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const (

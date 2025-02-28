@@ -38,6 +38,7 @@ func (u *User) GetHistory() []Command {
 
 func (u *User) ClearHistory() {
 	database.GetDB().Where("user_id = ?", u.ID).Delete(&Command{})
+	u.History = nil
 }
 
 func DeleteGuestUser() {
