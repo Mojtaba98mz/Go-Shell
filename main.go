@@ -5,6 +5,7 @@ import (
 	"Go-Shell/models"
 	"fmt"
 	"github.com/peterh/liner"
+	"log"
 	"os"
 	"strings"
 )
@@ -56,10 +57,20 @@ func processInput(input string) error {
 	currentUser.AddCommand(input)
 
 	// Handle redirections
-	origStdout, origStderr, err := commands.HandleRedirections(&args)
+	origStdout, origStderr, stdoutFile, stderrFile, err := commands.HandleRedirections(&args)
 	if err != nil {
-		return err
+		log.Fatalf("Error: %v", err)
 	}
+	defer func() {
+		os.Stdout = origStdout
+		os.Stderr = origStderr
+		if stdoutFile != nil {
+			stdoutFile.Close()
+		}
+		if stderrFile != nil {
+			stderrFile.Close()
+		}
+	}()
 	defer func() {
 		os.Stdout = origStdout
 		os.Stderr = origStderr

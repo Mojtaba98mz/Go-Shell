@@ -38,7 +38,6 @@ func Exit(args []string) error {
 	if len(args) == 1 {
 		code, _ = strconv.Atoi(args[0])
 	}
-	fmt.Printf("exit status %d\n", code)
 	os.Exit(code)
 	return nil
 }
