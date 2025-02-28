@@ -12,7 +12,7 @@ import (
 var currentUser *models.User
 
 func main() {
-	models.DeleteGuestUser()
+	models.DeleteUser("guest")
 	currentUser = models.NewUser("guest", "")
 	line := liner.NewLiner()
 	defer line.Close()

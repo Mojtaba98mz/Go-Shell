@@ -41,9 +41,9 @@ func (u *User) ClearHistory() {
 	u.History = nil
 }
 
-func DeleteGuestUser() {
+func DeleteUser(username string) {
 	var user User
-	if err := database.GetDB().Where("username = ?", "guest").Preload("History").First(&user).Error; err == nil {
+	if err := database.GetDB().Where("username = ?", username).Preload("History").First(&user).Error; err == nil {
 		database.GetDB().Delete(&user)
 	}
 }
