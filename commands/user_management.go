@@ -4,6 +4,7 @@ import (
 	"Go-Shell/models"
 	"errors"
 	"fmt"
+	"gorm.io/gorm"
 )
 
 func Login(args []string, currentUser **models.User) error {
@@ -11,8 +12,8 @@ func Login(args []string, currentUser **models.User) error {
 		return errors.New("usage: login <username> <password>")
 	}
 	username, password := args[0], args[1]
-	user := models.FindUser(username)
-	if user == nil {
+	user, err := models.FindUser(username)
+	if err != nil {
 		return errors.New("user not found")
 	}
 	if user.Password != password {
@@ -28,10 +29,11 @@ func AddUser(args []string) error {
 		return errors.New("usage: adduser <username> <password>")
 	}
 	username, password := args[0], args[1]
-	if models.FindUser(username) != nil {
+	user, err := models.FindUser(username)
+	if user != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return errors.New("duplicate user exists with this username")
 	}
-	models.CreateUser(username, password)
+	models.NewUser(username, password)
 	fmt.Println("user created successfully")
 	return nil
 }

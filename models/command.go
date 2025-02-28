@@ -3,15 +3,9 @@ package models
 import "time"
 
 type Command struct {
-	Name      string
-	Count     int
-	Timestamp time.Time
-}
-
-func NewCommand(name string) *Command {
-	return &Command{
-		Name:      name,
-		Count:     1,
-		Timestamp: time.Now(),
-	}
+	ID        uint      `gorm:"primaryKey"`
+	UserID    uint      `gorm:"index"`
+	Name      string    `gorm:"not null"`
+	Count     int       `gorm:"not null"`
+	Timestamp time.Time `gorm:"not null"`
 }

@@ -11,6 +11,7 @@ import (
 var currentUser *models.User
 
 func main() {
+	models.DeleteGuestUser()
 	currentUser = models.NewUser("guest", "")
 	line := liner.NewLiner()
 	defer line.Close()
@@ -51,7 +52,7 @@ func processInput(input string) error {
 	}
 
 	command := args[0]
-	currentUser.AddCommand(models.NewCommand(input))
+	currentUser.AddCommand(input)
 
 	switch command {
 	case "exit":
