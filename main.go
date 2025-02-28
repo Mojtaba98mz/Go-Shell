@@ -5,6 +5,7 @@ import (
 	"Go-Shell/models"
 	"fmt"
 	"github.com/peterh/liner"
+	"os"
 	"strings"
 )
 
@@ -46,13 +47,23 @@ func main() {
 }
 
 func processInput(input string) error {
-	args := strings.Fields(input)
+	args := parseArguments(input)
 	if len(args) == 0 {
 		return nil
 	}
 
 	command := args[0]
 	currentUser.AddCommand(input)
+
+	// Handle redirections
+	origStdout, origStderr, err := commands.HandleRedirections(&args)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		os.Stdout = origStdout
+		os.Stderr = origStderr
+	}()
 
 	switch command {
 	case "exit":
@@ -84,4 +95,42 @@ func processInput(input string) error {
 	default:
 		return commands.ExecSystemCommand(args)
 	}
+}
+
+func parseArguments(input string) []string {
+	var args []string
+	var current strings.Builder
+	inQuotes := false
+	escaped := false
+
+	for _, r := range input {
+		switch {
+		case escaped:
+			switch r {
+			case '$', '`', '"', '\\', '\n':
+				current.WriteRune(r)
+			default:
+				current.WriteRune('\\')
+				current.WriteRune(r)
+			}
+			escaped = false
+		case r == '\\':
+			escaped = true
+		case r == '"':
+			inQuotes = !inQuotes
+		case !inQuotes && (r == ' ' || r == '\t'):
+			if current.Len() > 0 {
+				args = append(args, current.String())
+				current.Reset()
+			}
+		default:
+			current.WriteRune(r)
+		}
+	}
+
+	if current.Len() > 0 {
+		args = append(args, current.String())
+	}
+
+	return args
 }
